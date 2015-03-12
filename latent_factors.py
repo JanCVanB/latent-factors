@@ -9,7 +9,6 @@ NUM_USERS = 943
 DEBUG = True
 
 
-@profile
 def matrix_factorization(user_movie_matrix, dimensions=2, lambda_=10, learning_rate=0.01, max_steps=50, min_error=0.01):
     """ Matrix Factorization with missing values using gradient descent
 
@@ -101,7 +100,7 @@ def test():
 
 def run():
     user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
-    u, v = matrix_factorization(user_movie_matrix, dimensions=10, max_steps=10)
+    u, v = matrix_factorization(user_movie_matrix, dimensions=10, max_steps=5)
     print np.dot(u, v)
 
 

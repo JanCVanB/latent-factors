@@ -9,6 +9,7 @@ NUM_USERS = 943
 DEBUG = True
 
 
+@profile
 def matrix_factorization(user_movie_matrix, dimensions=2, lambda_=10, learning_rate=0.01, max_steps=50, min_error=0.01):
     """ Matrix Factorization with missing values using gradient descent
 

@@ -1,0 +1,50 @@
+Timer unit: 4.46191e-07 s
+
+Total time: 4.16851 s
+File: latent_factors.py
+Function: matrix_factorization at line 11
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    11                                           @profile
+    12                                           def matrix_factorization(user_movie_matrix, dimensions=2, iterations=50, lambda_=10, learning_rate=0.01):
+    13                                               """ Matrix Factorization with missing values using gradient descent
+    14                                           
+    15                                               :param numpy.array user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
+    16                                               :param int dimensions: the "free" dimension of the latent factor model
+    17                                               :param int iterations: the maximum number of iterations to perform gradient descent
+    18                                               :param float lambda_: the regularization parameter
+    19                                               :param float learning_rate: the gradient descent learning rate
+    20                                               :return: two latent factor models with the shapes M*dimensions and dimensions*N;
+    21                                               :rtype: tuple 
+    22                                               """
+    23         1            9      9.0      0.0      m, n = user_movie_matrix.shape
+    24         1           35     35.0      0.0      u = np.random.rand(m, dimensions)
+    25         1           13     13.0      0.0      v = np.random.rand(dimensions, n)
+    26      5001        12632      2.5      0.1      for iteration in xrange(iterations):
+    27                                                   # TODO: determine why the sqrt-decreasing learning rate results in tiny u and v values
+    28      5000        12461      2.5      0.1          learning_rate_decreasing = learning_rate  # / sqrt(iteration + 1)
+    29     30000        77830      2.6      0.8          for i_user in xrange(m):
+    30    125000       330089      2.6      3.5              for j_movie in xrange(n):
+    31                                                           # Only calculate non-missing values
+    32    100000       408748      4.1      4.4                  if user_movie_matrix[i_user][j_movie] > 0:
+    33     65000      1234145     19.0     13.2                      error = user_movie_matrix[i_user][j_movie] - np.dot(u[i_user, :], v[:, j_movie])
+    34                                                               # Gradient descent
+    35    195000       619595      3.2      6.6                      for dimension in xrange(dimensions):
+    36    130000       798650      6.1      8.5                          u[i_user][dimension] += learning_rate_decreasing * (2 * error * v[dimension][j_movie] -
+    37    130000       732698      5.6      7.8                                                                              lambda_ * u[i_user][dimension])
+    38    130000       722828      5.6      7.7                          v[dimension][j_movie] += learning_rate_decreasing * (2 * error * u[i_user][dimension] -
+    39    130000       712305      5.5      7.6                                                                               lambda_ * v[dimension][j_movie])
+    40      5000        48805      9.8      0.5          u_dot_v = np.dot(u, v)
+    41      5000        15303      3.1      0.2          error_total = 0
+    42     30000        81646      2.7      0.9          for i_user in xrange(m):
+    43    125000       338342      2.7      3.6              for j_movie in xrange(n):
+    44    100000       431074      4.3      4.6                  if user_movie_matrix[i_user][j_movie] > 0:
+    45     65000       968436     14.9     10.4                      error_total += (user_movie_matrix[i_user][j_movie] - u_dot_v[i_user, j_movie]) ** 2
+    46                                                               # Frobenius norm
+    47    195000       660350      3.4      7.1                      for dimension in xrange(dimensions):
+    48    130000      1120839      8.6     12.0                          error_total += lambda_ / 2 * (u[i_user][dimension] ** 2 + v[dimension][j_movie] ** 2)
+    49      5000        15592      3.1      0.2          if error_total < 0.01:
+    50                                                       break
+    51         1            3      3.0      0.0      return u, v
+

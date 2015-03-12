@@ -9,25 +9,23 @@ MOVIES_FILE_PATH = 'movies.txt'
 NUM_USERS = 943
 
 
-# This function is to do Matrix Factorization with missing values using gradient descent
-# Will get a latent factor model U & V
-# TODO: rename "ita", "eij", and "error"
-def matrix_factorization(user_movie_matrix, dimensions, ita=0.01, iterations=50, lambda_=10):
-    """ ...
-    :param user_movie_matrix: input matrix to be factorized, learn latent factor model from this matrix
-    :param dimensions: the dimension for latent factor
-    :param ita: the learning rate
+# TODO: rename "eij", and "error"
+def matrix_factorization(user_movie_matrix, dimensions, iterations=50, lambda_=10, learning_rate=0.01):
+    """ Matrix Factorization with missing values using gradient descent
+
+    :param user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
+    :param dimensions: the "free" dimension of the latent factor model
     :param iterations: the maximum number of iterations to perform gradient descent
     :param lambda_: the regularization parameter
-    :return: U--latent factor model of dimension M*dimensions;
-    		 V--latent factor model of dimension dimensions*N;
+    :param learning_rate: the gradient descent learning rate
+    :return: two latent factor models with the shapes M*dimensions and dimensions*N;
     :rtype: tuple 
     """
     m, n = user_movie_matrix.shape
     u = np.random.rand(m, dimensions)
     v = np.random.rand(dimensions, n)
     for iteration in xrange(iterations):
-    	ita_n = ita/math.sqrt(iteration+1)
+        learning_rate = learning_rate
         for i_user in xrange(m):
             for j_movie in xrange(n):
                 # Only calculate non-missing values
@@ -35,8 +33,12 @@ def matrix_factorization(user_movie_matrix, dimensions, ita=0.01, iterations=50,
                     eij = user_movie_matrix[i_user][j_movie] - np.dot(u[i_user, :], v[:, j_movie])
                     # Gradient descent
                     for dimension in xrange(dimensions):
-                        u[i_user][dimension] -= ita_n * (lambda_ * u[i_user][dimension] - 2 * v[dimension][j_movie] * eij)
-                        v[dimension][j_movie] -= ita_n * (lambda_ * v[dimension][j_movie] - 2 * u[i_user][dimension] * eij)
+                        u[i_user][dimension] -= ((lambda_ * u[i_user][dimension] -
+                                                  2 * eij * v[dimension][j_movie]) *
+                                                 learning_rate / math.sqrt(iteration+1))
+                        v[dimension][j_movie] -= ((lambda_ * v[dimension][j_movie] -
+                                                   2 * eij * u[i_user][dimension]) *
+                                                  learning_rate / math.sqrt(iteration+1))
         u_dot_v = np.dot(u, v)
         error = 0
         for i_user in xrange(m):
@@ -51,13 +53,15 @@ def matrix_factorization(user_movie_matrix, dimensions, ita=0.01, iterations=50,
     return u, v
 
 
-# read_data from rating_file, the input format is u_id, movie_id, rating
-# construct user_movie_matrix based on rating data, where 0 means missing rating data
 def read_data(ratings_file_path, movies_file_path):
-    """ ...
-    :param ratings_file_path: the path of ratings_file
-    :param movies_file_path: the path of movies_file
-    :return: user_movie_matrix: a row represent a user, a column represent a movie
+    """ Read data from files containing user-movie ratings and movie tags and return a user-movie matrix
+
+    The ratings file format is user id, movie id, rating (on each line)
+    The user-movie matrix is based on rating data, where 0 indicates missing rating data
+
+    :param str ratings_file_path: the path to the ratings data file
+    :param str movies_file_path: the path to movies data file
+    :return: user_movie_matrix: each row represents a user, each column represents a movie
     :rtype: numpy.array
     """
     with open(ratings_file_path, 'rU') as ratings_file:
@@ -81,7 +85,7 @@ def run():
         [1, 0, 0, 4],
         [0, 1, 5, 4],
     ])
-    u, v = matrix_factorization(user_movie_matrix, dimensions=10)
+    u, v = matrix_factorization(test_matrix, dimensions=10)
     print np.dot(u, v)
 
 

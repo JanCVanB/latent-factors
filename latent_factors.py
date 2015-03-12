@@ -6,25 +6,27 @@ from math import sqrt
 RATINGS_FILE_PATH = 'data.txt'
 MOVIES_FILE_PATH = 'movies.txt'
 NUM_USERS = 943
+DEBUG = True
 
 
-def matrix_factorization(user_movie_matrix, dimensions=2, iterations=50, lambda_=10, learning_rate=0.01):
+def matrix_factorization(user_movie_matrix, dimensions=2, lambda_=10, learning_rate=0.01, max_steps=50, min_error=0.01):
     """ Matrix Factorization with missing values using gradient descent
 
     :param numpy.array user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
     :param int dimensions: the "free" dimension of the latent factor model
-    :param int iterations: the maximum number of iterations to perform gradient descent
     :param float lambda_: the regularization parameter
     :param float learning_rate: the gradient descent learning rate
+    :param int max_steps: the step at which to stop gradient descent
+    :param float min_error: the error at which to stop gradient descent
     :return: two latent factor models with the shapes M*dimensions and dimensions*N;
     :rtype: tuple 
     """
     m, n = user_movie_matrix.shape
     u = np.random.rand(m, dimensions)
     v = np.random.rand(dimensions, n)
-    for iteration in xrange(iterations):
+    for step in xrange(max_steps):
         # TODO: determine why the sqrt-decreasing learning rate results in tiny u and v values
-        learning_rate_decreasing = learning_rate  # / sqrt(iteration + 1)
+        learning_rate_decreasing = learning_rate  # / sqrt(step + 1)
         for i_user in xrange(m):
             for j_movie in xrange(n):
                 # Only calculate non-missing values
@@ -45,7 +47,11 @@ def matrix_factorization(user_movie_matrix, dimensions=2, iterations=50, lambda_
                     # Frobenius norm
                     for dimension in xrange(dimensions):
                         error_total += lambda_ / 2 * (u[i_user][dimension] ** 2 + v[dimension][j_movie] ** 2)
-        if error_total < 0.01:
+        if DEBUG:
+            spacing = ' ' * (len(str(max_steps)) - len(str(step + 1)))
+            print ('{}{} steps done, error = {:.3g} (stopping at step {} or error {:.3g})'
+                   .format(spacing, step + 1, error_total, max_steps, min_error))
+        if error_total < min_error:
             break
     return u, v
 
@@ -81,7 +87,7 @@ def test():
         [1, 0, 0, 4],
         [0, 1, 5, 4],
         ])
-    u, v = matrix_factorization(test_matrix, dimensions=2, iterations=5000, lambda_=0.02, learning_rate=0.0002)
+    u, v = matrix_factorization(test_matrix, dimensions=2, max_steps=5000, lambda_=0.02, learning_rate=0.0002)
     u_dot_v = np.dot(u, v)
     tolerance = 1
     for i in range(test_matrix.shape[0]):
@@ -94,10 +100,10 @@ def test():
 
 def run():
     user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
-    u, v = matrix_factorization(user_movie_matrix, dimensions=10)
+    u, v = matrix_factorization(user_movie_matrix, dimensions=10, max_steps=10)
     print np.dot(u, v)
 
 
 if __name__ == '__main__':
-    test()
-    # run()
+    # test()
+    run()

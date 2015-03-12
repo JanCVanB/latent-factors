@@ -1,10 +1,8 @@
 import csv
 import numpy as np
 import math
-
 # TODO: update e cutoff, iterations, lambda, and ita values (they caused floating-point calculation RuntimeWarning)
 # TODO: rename "user_movie_matrix"
-
 
 RATINGS_FILE_PATH = 'data.txt'
 MOVIES_FILE_PATH = 'movies.txt'

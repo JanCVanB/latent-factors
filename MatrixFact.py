@@ -1,7 +1,6 @@
 import csv
 import numpy as np
-import math
-# TODO: update e cutoff, iterations, lambda, and ita values (they caused floating-point calculation RuntimeWarning)
+from math import sqrt
 # TODO: rename "user_movie_matrix"
 
 RATINGS_FILE_PATH = 'data.txt'
@@ -9,15 +8,14 @@ MOVIES_FILE_PATH = 'movies.txt'
 NUM_USERS = 943
 
 
-# TODO: rename "eij", and "error"
-def matrix_factorization(user_movie_matrix, dimensions, iterations=50, lambda_=10, learning_rate=0.01):
+def matrix_factorization(user_movie_matrix, dimensions=2, iterations=50, lambda_=10, learning_rate=0.01):
     """ Matrix Factorization with missing values using gradient descent
 
-    :param user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
-    :param dimensions: the "free" dimension of the latent factor model
-    :param iterations: the maximum number of iterations to perform gradient descent
-    :param lambda_: the regularization parameter
-    :param learning_rate: the gradient descent learning rate
+    :param numpy.array user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
+    :param int dimensions: the "free" dimension of the latent factor model
+    :param int iterations: the maximum number of iterations to perform gradient descent
+    :param float lambda_: the regularization parameter
+    :param float learning_rate: the gradient descent learning rate
     :return: two latent factor models with the shapes M*dimensions and dimensions*N;
     :rtype: tuple 
     """
@@ -25,30 +23,29 @@ def matrix_factorization(user_movie_matrix, dimensions, iterations=50, lambda_=1
     u = np.random.rand(m, dimensions)
     v = np.random.rand(dimensions, n)
     for iteration in xrange(iterations):
-        learning_rate = learning_rate
+        # TODO: determine why the sqrt-decreasing learning rate results in tiny u and v values
+        learning_rate_decreasing = learning_rate  # / sqrt(iteration + 1)
         for i_user in xrange(m):
             for j_movie in xrange(n):
                 # Only calculate non-missing values
                 if user_movie_matrix[i_user][j_movie] > 0:
-                    eij = user_movie_matrix[i_user][j_movie] - np.dot(u[i_user, :], v[:, j_movie])
+                    error = user_movie_matrix[i_user][j_movie] - np.dot(u[i_user, :], v[:, j_movie])
                     # Gradient descent
                     for dimension in xrange(dimensions):
-                        u[i_user][dimension] -= ((lambda_ * u[i_user][dimension] -
-                                                  2 * eij * v[dimension][j_movie]) *
-                                                 learning_rate / math.sqrt(iteration+1))
-                        v[dimension][j_movie] -= ((lambda_ * v[dimension][j_movie] -
-                                                   2 * eij * u[i_user][dimension]) *
-                                                  learning_rate / math.sqrt(iteration+1))
+                        u[i_user][dimension] += learning_rate_decreasing * (2 * error * v[dimension][j_movie] -
+                                                                            lambda_ * u[i_user][dimension])
+                        v[dimension][j_movie] += learning_rate_decreasing * (2 * error * u[i_user][dimension] -
+                                                                             lambda_ * v[dimension][j_movie])
         u_dot_v = np.dot(u, v)
-        error = 0
+        error_total = 0
         for i_user in xrange(m):
             for j_movie in xrange(n):
                 if user_movie_matrix[i_user][j_movie] > 0:
-                    error += (user_movie_matrix[i_user][j_movie] - u_dot_v[i_user, j_movie]) ** 2
+                    error_total += (user_movie_matrix[i_user][j_movie] - u_dot_v[i_user, j_movie]) ** 2
                     # Frobenius norm
                     for dimension in xrange(dimensions):
-                        error += lambda_ / 2 * (u[i_user][dimension] ** 2 + v[dimension][j_movie] ** 2)
-        if error < 0.01:
+                        error_total += lambda_ / 2 * (u[i_user][dimension] ** 2 + v[dimension][j_movie] ** 2)
+        if error_total < 0.01:
             break
     return u, v
 
@@ -76,18 +73,31 @@ def read_data(ratings_file_path, movies_file_path):
     return user_movie_matrix
 
 
-def run():
-    user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
+def test():
     test_matrix = np.array([
         [5, 3, 0, 1],
         [4, 0, 0, 1],
         [1, 1, 0, 5],
         [1, 0, 0, 4],
         [0, 1, 5, 4],
-    ])
-    u, v = matrix_factorization(test_matrix, dimensions=10)
+        ])
+    u, v = matrix_factorization(test_matrix, dimensions=2, iterations=5000, lambda_=0.02, learning_rate=0.0002)
+    u_dot_v = np.dot(u, v)
+    tolerance = 1
+    for i in range(test_matrix.shape[0]):
+        for j in range(test_matrix.shape[1]):
+            rating_in = test_matrix[i][j]
+            rating_out = u_dot_v[i][j]
+            if rating_in:
+                assert abs(rating_in - rating_out) < tolerance, 'input {} output {}'.format(rating_in, rating_out)
+
+
+def run():
+    user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
+    u, v = matrix_factorization(user_movie_matrix, dimensions=10)
     print np.dot(u, v)
 
 
 if __name__ == '__main__':
-    run()
+    test()
+    # run()

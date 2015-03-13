@@ -1,38 +1,38 @@
-import csv
 import numpy as np
-import math
-from numpy.linalg import inv
-from numpy import genfromtxt
-# TODO: rename "user_movie_matrix"
 
-U_FILE_PATH = 'results/after_factorization/u1.csv'
-V_FILE_PATH = 'results/after_factorization/v1.csv'
+U_FILE_PATH = 'results/after_factorization/u.csv'
+V_FILE_PATH = 'results/after_factorization/v.csv'
 
 
-def read_data(u_file_path, v_file_path):
+def read_data():
     """ Read data from u, v
     """
-    u = genfromtxt(U_FILE_PATH, delimiter=',')
-    v = genfromtxt(V_FILE_PATH, delimiter=',')
+    u = np.genfromtxt(U_FILE_PATH, delimiter=',')
+    v = np.genfromtxt(V_FILE_PATH, delimiter=',')
    
     return u, v
 
 
-def run():
-    """
-    compute svd of u, v 
-    then projection to 2 dimention
-    """
-    u, v = read_data(U_FILE_PATH, V_FILE_PATH)
-    # np.savetxt("user_movie_matrix_1.csv", user_movie_matrix, delimiter=',')
-    
-    Au, su, Bu = np.linalg.svd(u)
-    Av, sv, Bv = np.linalg.svd(v)
+def project(dimensions, *matrices):
+    """Factor all matrices with SVD and project them to the specified number of dimensions
 
-    print Au.shape
-    print Av.shape
-    u2 = np.dot(np.transpose(Av[:, :2]), np.transpose(u))
-    v2 = np.dot(np.transpose(Av[:, :2]), v)
+    :param int dimensions: new dimensionality of the matrices
+    :param tuple matrices: matrices to project
+    """
+    projected_matrices = []
+    for matrix in matrices:
+        a, _, _ = np.linalg.svd(matrix)
+        # TODO: determine if old code was correct (both av? transpose u?)
+        # u2 = np.dot(np.transpose(av[:, :2]), np.transpose(u))
+        # v2 = np.dot(np.transpose(av[:, :2]), v)
+        projected_matrix = np.dot(np.transpose(a[:, :dimensions]), matrix)
+        projected_matrices.append(projected_matrix)
+    return tuple(projected_matrices)
+
+
+def run():
+    u, v = read_data()
+    u2, v2 = project(2, u, v)
     np.savetxt("results/after_svd/u_2dim.csv", u2, delimiter=',')
     np.savetxt("results/after_svd/v_2dim.csv", v2, delimiter=',')
 

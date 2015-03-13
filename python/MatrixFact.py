@@ -26,7 +26,11 @@ def matrix_factorization(user_movie_matrix, dimensions, iterations=10, lambda_=1
     v = np.random.rand(dimensions, n)
     for iteration in xrange(iterations):
 
+
         # learning_rate_decreasing = learning_rate / math.sqrt(iteration+1)
+
+        W = np.array([[int(x > 0) for x in row] for row in user_movie_matrix])
+
         for i_user in xrange(m):
             for j_movie in xrange(n):
                 # Only calculate non-missing values

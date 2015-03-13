@@ -21,14 +21,14 @@ def project(u, v, dimensions=2):
     :param int dimensions: new dimensionality of the matrices
     """
     a, _, _ = np.linalg.svd(v)
-    u_new = np.dot(np.transpose(a[:, :dimensions]), np.transpose(u))
+    u_new = np.dot(np.transpose(a[:, :dimensions]), u)
     v_new = np.dot(np.transpose(a[:, :dimensions]), v)
     return u_new, v_new
 
 
 def run():
     u, v = read_data()
-    u2, v2 = project(u, v)
+    u2, v2 = project(2, np.transpose(u), v)
     np.savetxt("results/after_svd/u_2dim.csv", u2, delimiter=',')
     np.savetxt("results/after_svd/v_2dim.csv", v2, delimiter=',')
 

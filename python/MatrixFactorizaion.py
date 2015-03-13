@@ -24,12 +24,13 @@ def matrix_factorization(user_movie_matrix, dimensions, iterations=1000, lambda_
     v = np.random.rand(dimensions, n)
     for iteration in xrange(iterations):
         print iteration
+        # generate zeros_and_ones matrix to represent which elem in user_movie_matrix > 0
         W = np.array([[int(x > 0) for x in row] for row in user_movie_matrix])
-        # learning_rate_decreasing = learning_rate / math.sqrt(iteration+1)
+        # update the each row in u matrix
         for i_user in xrange(m):
             error = user_movie_matrix[i_user, :] - np.dot(u[i_user, :], v)
             u[i_user, :] -= ((lambda_ * u[i_user, :] - 2 * np.dot((W[i_user, :] * error), np.transpose(v))) * learning_rate)
-
+        # update the each column in v matrix
         for j_movie in xrange(n):
             error = user_movie_matrix[:, j_movie] - np.dot(u, v[:, j_movie])
             v[:, j_movie] -= ((lambda_ * v[:, j_movie] - 2 * np.dot(np.transpose(u), (W[:, j_movie] * error))) * learning_rate)
@@ -60,8 +61,12 @@ def read_data(ratings_file_path, movies_file_path):
 
 
 def run():
+    """ generate u, v matrix to csv files
+    """
     user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
     # np.savetxt("user_movie_matrix_1.csv",user_movie_matrix,delimiter=',')
+
+    # small test matrix
     test_matrix = np.array([
         [5, 3, 0, 1],
         [4, 0, 0, 1],

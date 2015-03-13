@@ -32,7 +32,7 @@ def project(dimensions, *matrices):
 
 def run():
     u, v = read_data()
-    u2, v2 = project(2, u, v)
+    u2, v2 = project(2, np.transpose(u), v)
     np.savetxt("results/after_svd/u_2dim.csv", u2, delimiter=',')
     np.savetxt("results/after_svd/v_2dim.csv", v2, delimiter=',')
 

@@ -9,12 +9,15 @@ MOVIES_FILE_PATH = '../data/movies.txt'
 NUM_USERS = 943
 
 
+<<<<<<< Updated upstream:python/MatrixFact_ALS.py
 def foo(x):
     if x > 0:
         a = 1
     else:
         a = 0
     return a
+=======
+>>>>>>> Stashed changes:MatrixFact_ALS.py
 
 
 def matrix_factorization(user_movie_matrix, dimensions, iterations=3, lambda_=0.2, learning_rate=0.0002):

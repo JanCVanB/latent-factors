@@ -10,7 +10,7 @@ NUM_USERS = 943
 
 
 # TODO: rename "eij", and "error"
-def matrix_factorization(user_movie_matrix, dimensions, iterations=150, lambda_=0.02, learning_rate=0.0002):
+def matrix_factorization(user_movie_matrix, dimensions, iterations=500, lambda_=0.02, learning_rate=0.0002):
     """ Matrix Factorization with missing values using gradient descent
 
     :param user_movie_matrix: input matrix to factorize and from which to learn the latent factor model

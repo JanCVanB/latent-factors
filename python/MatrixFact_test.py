@@ -1,15 +1,13 @@
 import csv
 import numpy as np
 import math
-# TODO: update e cutoff, iterations, lambda, and ita values (they caused floating-point calculation RuntimeWarning)
 # TODO: rename "user_movie_matrix"
 
-RATINGS_FILE_PATH = 'data.txt'
-MOVIES_FILE_PATH = 'movies.txt'
+RATINGS_FILE_PATH = '../data/ratings.txt'
+MOVIES_FILE_PATH = '../data/movies.txt'
 NUM_USERS = 943
 
 
-# TODO: rename "eij", and "error"
 def matrix_factorization(user_movie_matrix, dimensions, iterations=1000, lambda_=0.02, learning_rate=0.0002):
     """ Matrix Factorization with missing values using gradient descent
 
@@ -27,16 +25,15 @@ def matrix_factorization(user_movie_matrix, dimensions, iterations=1000, lambda_
     for iteration in xrange(iterations):
         print iteration
         W = np.array([[int(x > 0) for x in row] for row in user_movie_matrix])
-        # learning_rate = learning_rate/math.sqrt(iteration+1)
+        # learning_rate_decreasing = learning_rate / math.sqrt(iteration+1)
         for i_user in xrange(m):
-            error = user_movie_matrix[i_user,:] - np.dot(u[i_user, :], v)
-            u[i_user,:] -= ((lambda_ * u[i_user,:] - 2 * np.dot( (W[i_user,:] * error), np.transpose(v)) ) * learning_rate)
+            error = user_movie_matrix[i_user, :] - np.dot(u[i_user, :], v)
+            u[i_user, :] -= ((lambda_ * u[i_user, :] - 2 * np.dot((W[i_user, :] * error), np.transpose(v))) * learning_rate)
 
         for j_movie in xrange(n):
-            error = user_movie_matrix[:,j_movie] - np.dot(u, v[:,j_movie])
-            v[:,j_movie] -= ((lambda_ * v[:,j_movie] - 2 * np.dot( np.transpose(u), (W[:,j_movie] * error)) ) * learning_rate) 
-    return  u, v
-
+            error = user_movie_matrix[:, j_movie] - np.dot(u, v[:, j_movie])
+            v[:, j_movie] -= ((lambda_ * v[:, j_movie] - 2 * np.dot(np.transpose(u), (W[:, j_movie] * error))) * learning_rate)
+    return u, v
 
 
 def read_data(ratings_file_path, movies_file_path):
@@ -74,12 +71,12 @@ def run():
     ])
 
     u, v = matrix_factorization(user_movie_matrix, dimensions=20)
-    np.savetxt("u.csv",u,delimiter=',')
-    np.savetxt("v.csv",v,delimiter=',')
+    np.savetxt("results/after_factorization/u.csv", u, delimiter=',')
+    np.savetxt("results/after_factorization/v.csv", v, delimiter=',')
 
     ret = np.dot(u, v)    
     print ret
-    np.savetxt("recover.csv",ret,delimiter=',')
+    np.savetxt("results/after_factorization/recover.csv", ret, delimiter=',')
 
 
 if __name__ == '__main__':

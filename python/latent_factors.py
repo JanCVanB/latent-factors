@@ -3,8 +3,8 @@ import numpy as np
 from math import sqrt
 # TODO: rename "user_movie_matrix"
 
-RATINGS_FILE_PATH = 'data.txt'
-MOVIES_FILE_PATH = 'movies.txt'
+RATINGS_FILE_PATH = '../data/ratings.txt'
+MOVIES_FILE_PATH = '../data/movies.txt'
 NUM_USERS = 943
 DEBUG = True
 
@@ -79,6 +79,12 @@ def read_data(ratings_file_path, movies_file_path):
     return user_movie_matrix
 
 
+def run():
+    user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
+    u, v = matrix_factorization(user_movie_matrix, dimensions=10, max_steps=5)
+    print np.dot(u, v)
+
+
 def test():
     test_matrix = np.array([
         [5, 3, 0, 1],
@@ -98,12 +104,7 @@ def test():
                 assert abs(rating_in - rating_out) < tolerance, 'input {} output {}'.format(rating_in, rating_out)
 
 
-def run():
-    user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
-    u, v = matrix_factorization(user_movie_matrix, dimensions=10, max_steps=5)
-    print np.dot(u, v)
-
-
 if __name__ == '__main__':
-    # test()
+    if DEBUG:
+        test()
     run()

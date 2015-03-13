@@ -5,8 +5,8 @@ ITA=0.01; % Learning Rate
 ITERATIONS=50; %alternative stopping condition for Gradient Descent
 LAMBDA=10; % Regularization Parameter
 
-RATINGS_FILE_PATH = 'data/data.txt';
-MOVIES_FILE_PATH = 'data/movies.txt';
+RATINGS_FILE_PATH = '../data/ratings.txt';
+MOVIES_FILE_PATH = '../data/movies.txt';
 
 ratings = importdata(RATINGS_FILE_PATH);
 

@@ -2,21 +2,21 @@ import csv
 import numpy as np
 import math
 from numpy.linalg import inv
-# TODO: update e cutoff, iterations, lambda, and ita values (they caused floating-point calculation RuntimeWarning)
 # TODO: rename "user_movie_matrix"
 
-RATINGS_FILE_PATH = 'data.txt'
-MOVIES_FILE_PATH = 'movies.txt'
+RATINGS_FILE_PATH = '../data/ratings.txt'
+MOVIES_FILE_PATH = '../data/movies.txt'
 NUM_USERS = 943
 
+
 def foo(x):
-    if x>0:
+    if x > 0:
         a = 1
     else:
         a = 0
     return a
 
-# TODO: rename "eij", and "error"
+
 def matrix_factorization(user_movie_matrix, dimensions, iterations=3, lambda_=0.2, learning_rate=0.0002):
     """ Matrix Factorization with missing values using gradient descent
 
@@ -34,20 +34,20 @@ def matrix_factorization(user_movie_matrix, dimensions, iterations=3, lambda_=0.
     lambda_I = lambda_ * np.eye(dimensions)
     for iteration in xrange(iterations):
         W = np.array([[int(x > 0) for x in row] for row in user_movie_matrix])
-        # learning_rate = learning_rate/math.sqrt(iteration+1)
+        # learning_rate = learning_rate / math.sqrt(iteration+1)
 
         for i_user in xrange(m):
-            w_diag = np.diag(W[i_user,:])
-            V_w_Vt = np.dot(np.dot(v,w_diag),np.transpose(v))
-            V_w_mat = np.dot(np.dot(v,w_diag), np.transpose(user_movie_matrix[i_user,:]))
-            u[i_user,:] = np.transpose(np.dot(inv(V_w_Vt+lambda_I), V_w_mat))
-            
+            w_diag = np.diag(W[i_user, :])
+            V_w_Vt = np.dot(np.dot(v, w_diag), np.transpose(v))
+            V_w_mat = np.dot(np.dot(v, w_diag), np.transpose(user_movie_matrix[i_user, :]))
+            u[i_user, :] = np.transpose(np.dot(inv(V_w_Vt + lambda_I), V_w_mat))
+
         for j_movie in xrange(n):
-            w_diag = np.diag(W[:,j_movie])
-            U_w_Ut = np.dot(np.dot(np.transpose(u),w_diag) ,u)
-            V_w_mat = np.dot(np.dot(np.transpose(u),w_diag), user_movie_matrix[:,j_movie])
-            v[:,j_movie] = np.dot(inv(V_w_Vt+lambda_I), V_w_mat)    
-        
+            w_diag = np.diag(W[:, j_movie])
+            U_w_Ut = np.dot(np.dot(np.transpose(u), w_diag), u)
+            V_w_mat = np.dot(np.dot(np.transpose(u), w_diag), user_movie_matrix[:, j_movie])
+            v[:, j_movie] = np.dot(inv(V_w_Vt + lambda_I), V_w_mat)
+
     return u, v
 
 
@@ -76,7 +76,7 @@ def read_data(ratings_file_path, movies_file_path):
 
 def run():
     user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
-    #np.savetxt("user_movie_matrix.csv",user_movie_matrix,delimiter=',')
+    # np.savetxt("user_movie_matrix.csv", user_movie_matrix, delimiter=',')
     test_matrix = np.array([
         [5, 3, 0, 1],
         [4, 0, 0, 1],
@@ -86,12 +86,12 @@ def run():
     ])
 
     u, v = matrix_factorization(user_movie_matrix, dimensions=10)
-    np.savetxt("u_ALS.csv",u,delimiter=',')
-    np.savetxt("v_ALS.csv",v,delimiter=',')
+    np.savetxt("results/after_factorization/u_ALS.csv", u, delimiter=',')
+    np.savetxt("results/after_factorization/v_ALS.csv", v, delimiter=',')
 
-    ret = np.dot(u, v)    
+    ret = np.dot(u, v)
     print ret
-    np.savetxt("temp_ALS.csv",ret,delimiter=',')
+    np.savetxt("results/after_factorization/temp_ALS.csv", ret, delimiter=',')
 
 
 if __name__ == '__main__':

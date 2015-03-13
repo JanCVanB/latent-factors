@@ -3,7 +3,7 @@ from numpy import array
 
 # Load and parse the data
 # data = sc.textFile("mllib/data/als/test.data")
-data = sc.textFile("data.txt")
+data = sc.textFile("../data/ratings.txt")
 ratings = data.map(lambda line: array([float(x) for x in line.split('\t')]))
 
 # Build the recommendation model using Alternating Least Squares

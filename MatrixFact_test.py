@@ -10,7 +10,7 @@ NUM_USERS = 943
 
 
 # TODO: rename "eij", and "error"
-def matrix_factorization(user_movie_matrix, dimensions, iterations=500, lambda_=0.02, learning_rate=0.0002):
+def matrix_factorization(user_movie_matrix, dimensions, iterations=1000, lambda_=0.02, learning_rate=0.0002):
     """ Matrix Factorization with missing values using gradient descent
 
     :param user_movie_matrix: input matrix to factorize and from which to learn the latent factor model
@@ -73,13 +73,13 @@ def run():
         [0, 1, 5, 4],
     ])
 
-    u, v = matrix_factorization(user_movie_matrix, dimensions=10)
-    np.savetxt("u1.csv",u,delimiter=',')
-    np.savetxt("v1.csv",v,delimiter=',')
+    u, v = matrix_factorization(user_movie_matrix, dimensions=20)
+    np.savetxt("u.csv",u,delimiter=',')
+    np.savetxt("v.csv",v,delimiter=',')
 
     ret = np.dot(u, v)    
     print ret
-    np.savetxt("temp1.csv",ret,delimiter=',')
+    np.savetxt("recover.csv",ret,delimiter=',')
 
 
 if __name__ == '__main__':

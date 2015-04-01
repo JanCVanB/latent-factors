@@ -83,7 +83,7 @@ def read_data(ratings_file_path, movies_file_path):
 
 def run():
     user_movie_matrix = read_data(RATINGS_FILE_PATH, MOVIES_FILE_PATH)
-    np.savetxt("user_movie_matrix.csv", user_movie_matrix, delimiter=',')
+    np.savetxt("results/user_movie_matrix.csv", user_movie_matrix, delimiter=',')
     test_matrix = np.array([
         [5, 3, 0, 1],
         [4, 0, 0, 1],

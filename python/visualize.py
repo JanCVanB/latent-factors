@@ -9,6 +9,7 @@ from itertools import cycle
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import unicodedata
 
 
 def graph(movies, v2):
@@ -18,19 +19,26 @@ def graph(movies, v2):
     :param numpy.array v2: V matrix containing response of each movie to the top 2 latent factors
     """
     xv, yv = v2[0, :], v2[1, :]
-    specials = ['Amityville' in movie[1] for movie in movies]  # Amityville films
-    # specials = [int(movie[5]) and int(movie[6]) for movie in movies]  # Children's Animations
-    # specials = [any(s in movie[1] for s in ('Empire', 'Star Wars', 'Jedi')) for movie in movies]  # Star Wars films
-    # specials = [bool(int(movie[12])) for movie in movies]  # Film-Noir
-    # specials = [int(movie[13]) and int(movie[17]) for movie in movies]  # Horror and Sci-Fi
-    # specials = [int(movie[10]) and int(movie[14]) for movie in movies]  # Drama and Musical
-    # specials = [(xv[i] + 2) ** 2 + yv[i] ** 2 > 1.2 for i in range(len(movies))]  # Outer ring of films
+    specials = ['Amityville' in movie[1] for movie in movies]
+    title = 'The Amityville Franchise'
+    # specials = [int(movie[5]) and int(movie[6]) for movie in movies]
+    # title = "Children's Animations"
+    # specials = [any(s in movie[1] for s in ('Empire', 'Star Wars', 'Jedi')) for movie in movies]
+    # title = 'The Star Wars Franchise'
+    # specials = [bool(int(movie[12])) for movie in movies]
+    # title = 'Film-Noir'
+    # specials = [int(movie[13]) and int(movie[17]) for movie in movies]
+    # title = 'Horror Sci-Fi'
+    # specials = [int(movie[10]) and int(movie[14]) for movie in movies]
+    # title = 'Dramatic Musicals'
+    # specials = [(xv[i] + 2) ** 2 + yv[i] ** 2 > 1.2 for i in range(len(movies))]
+    # title = 'Outermost Films'
     filter_special = lambda x: ([x[i] for i in range(len(x)) if specials[i]],
                                 [x[i] for i in range(len(x)) if not specials[i]])
     movies_special, movies_other = filter_special(movies)
     xv_special, xv_other = filter_special(xv)
     yv_special, yv_other = filter_special(yv)
-    plt.title('The Amityville Franchise')
+    plt.title(title)
     plt.xlim(-4, 0)
     plt.ylim(-2, 2)
     plt.scatter(xv_other, yv_other, facecolor='0.7', lw=0, s=7)
@@ -47,6 +55,7 @@ def graph(movies, v2):
         plt.annotate(movie[1], xy=(xv_special[index], yv_special[index]),
                      xytext=(x_text, y_text),
                      arrowprops=dict(arrowstyle='->', ec=color), ha='center', color=color, size=12)
+    plt.savefig('results/graphs/{}.png'.format('_'.join(title.lower().split())))
     plt.show()
 
 

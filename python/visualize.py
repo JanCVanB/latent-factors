@@ -11,17 +11,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-MOVIES_FILE_PATH = '../data/movies.txt'
-V_FILE_PATH = 'results/after_projection/v_2dim.csv'
-
-
-def graph(movies, v):
+def graph(movies, v2):
     """Graph all movies along two latent factor axes, with certain movies highlighted
 
-    :param np.array movies: information about movies, including titles
-    :param np.array v: V matrix containing response of each movie to the top 2 latent factors
+    :param numpy.array movies: information about movies, including titles
+    :param numpy.array v2: V matrix containing response of each movie to the top 2 latent factors
     """
-    xv, yv = v[0, :], v[1, :]
+    xv, yv = v2[0, :], v2[1, :]
     specials = ['Amityville' in movie[1] for movie in movies]  # Amityville films
     # specials = [int(movie[5]) and int(movie[6]) for movie in movies]  # Children's Animations
     # specials = [any(s in movie[1] for s in ('Empire', 'Star Wars', 'Jedi')) for movie in movies]  # Star Wars films
@@ -54,18 +50,21 @@ def graph(movies, v):
     plt.show()
 
 
-def read_data():
+def read_data(movies_file_path, v2_file_path):
     """Read data from U, V matrices
+
+    :param str movies_file_path: path to movies information CSV
+    :param str v2_file_path: path to 2-factor V matrix CSV
     """
-    with open(MOVIES_FILE_PATH, 'rU') as movie_file:
+    with open(movies_file_path, 'rU') as movie_file:
         movies = np.array(list(csv.reader(movie_file, dialect=csv.excel_tab)))
-    v = np.genfromtxt(V_FILE_PATH, delimiter=',')
-    return movies, v
+    v2 = np.genfromtxt(v2_file_path, delimiter=',')
+    return movies, v2
 
 
 def run():
-    movies, v = read_data()
-    graph(movies, v)
+    movies, v2 = read_data(movies_file_path='../data/movies.txt', v2_file_path='results/after_projection/v_2dim.csv')
+    graph(movies, v2)
 
 
 if __name__ == '__main__':

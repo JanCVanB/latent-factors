@@ -7,15 +7,11 @@ Last modified on April 3, 2015
 import numpy as np
 
 
-U_FILE_PATH = 'results/after_factorization/u.csv'
-V_FILE_PATH = 'results/after_factorization/v.csv'
-
-
 def project(u, v, dimensions=2):
     """Factor all matrices with SVD and project them to the specified number of dimensions
 
-    :param np.array u: first matrix to project
-    :param np.array v: second matrix to project
+    :param numpy.array u: first matrix to project
+    :param numpy.array v: second matrix to project
     :param int dimensions: new dimensionality of the matrices
     """
     a, _, _ = np.linalg.svd(v)
@@ -24,16 +20,19 @@ def project(u, v, dimensions=2):
     return u_new, v_new
 
 
-def read_data():
+def read_data(u_file_path, v_file_path):
     """Read data from u, v
+
+    :param str u_file_path: path to U matrix CSV
+    :param str v_file_path: path to V matrix CSV
     """
-    u = np.genfromtxt(U_FILE_PATH, delimiter=',')
-    v = np.genfromtxt(V_FILE_PATH, delimiter=',')
+    u = np.genfromtxt(u_file_path, delimiter=',')
+    v = np.genfromtxt(v_file_path, delimiter=',')
     return u, v
 
 
 def run():
-    u, v = read_data()
+    u, v = read_data(u_file_path='results/after_factorization/u.csv', v_file_path='results/after_factorization/v.csv')
     u2, v2 = project(np.transpose(u), v)
     np.savetxt("results/after_projection/u_2dim.csv", u2, delimiter=',')
     np.savetxt("results/after_projection/v_2dim.csv", v2, delimiter=',')

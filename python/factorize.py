@@ -23,7 +23,6 @@ def factorize(user_movie_matrix, dimensions, iterations=1000, lambda_=0.02, lear
     u = np.random.rand(m, dimensions)
     v = np.random.rand(dimensions, n)
     for iteration in xrange(iterations):
-        print iteration
         # generate zeros_and_ones matrix to represent which elem in user_movie_matrix > 0
         w = np.array([[int(x > 0) for x in row] for row in user_movie_matrix])
         # update the each row in u matrix
@@ -61,6 +60,25 @@ def read_data(ratings_file_path, movies_file_path):
     return user_movie_matrix
 
 
+def test():
+    test_matrix = np.array([
+        [5, 3, 0, 1],
+        [4, 0, 0, 1],
+        [1, 1, 0, 5],
+        [1, 0, 0, 4],
+        [0, 1, 5, 4],
+    ])
+    u, v = factorize(test_matrix, dimensions=2, iterations=5000, lambda_=0.02, learning_rate=0.0002)
+    u_dot_v = np.dot(u, v)
+    tolerance = 1
+    for i in range(test_matrix.shape[0]):
+        for j in range(test_matrix.shape[1]):
+            rating_in = test_matrix[i][j]
+            rating_out = u_dot_v[i][j]
+            if rating_in:
+                assert abs(rating_in - rating_out) < tolerance, 'input {} output {}'.format(rating_in, rating_out)
+
+
 def run():
     """Generate U, V matrices and write them to CSV files
     """
@@ -73,4 +91,5 @@ def run():
 
 
 if __name__ == '__main__':
+    # test()
     run()

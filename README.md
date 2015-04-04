@@ -2,16 +2,16 @@
 
 Latent factor visualization for movie ratings (Caltech CS 155, Winter 2015)
 
-![The Amityville Franchise](/python/graphs/the_amityville_franchise.png?raw=true)
+![The Amityville Franchise](/python/results/graphs/the_amityville_franchise.png)
 
-![The Star Wars Franchise](/python/graphs/the_star_wars_franchise.png?raw=true)
+![The Star Wars Franchise](/python/results/graphs/the_star_wars_franchise.png)
 
-![Children's Animations](/python/graphs/children's_animations.png?raw=true)
+![Children's Animations](/python/results/graphs/children's_animations.png)
 
-![Dramatic Musicals](/python/graphs/dramatic_musicals.png?raw=true)
+![Dramatic Musicals](/python/results/graphs/dramatic_musicals.png)
 
-![Film-Noir](/python/graphs/film-noir.png?raw=true)
+![Film-Noir](/python/results/graphs/film-noir.png)
 
-![Horror Sci-Fi](/python/graphs/horror_sci-fi.png?raw=true)
+![Horror Sci-Fi](/python/results/graphs/horror_sci-fi.png)
 
-![Outermost Films](/python/graphs/outermost_films.png?raw=true)
+![Outermost Films](/python/results/graphs/outermost_films.png)
